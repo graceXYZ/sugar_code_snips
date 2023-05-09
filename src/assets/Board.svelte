@@ -28,6 +28,9 @@
 	}
 </script>
 <style>
+  .board {
+    width: 595px;
+  }
     .column {
         height: 420px;
         width: 200px;
@@ -40,6 +43,18 @@
     .program {
       width: 360px !important;
     }
+
+    @font-face {
+      font-family: 'Roboto';
+      src: url("https://fonts.googleapis.com/css2?family=Roboto&display=swap") format("woff");
+    }
+    
+    h1,h2,p {
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 100;
+    color: #000000;
+  }
 </style>
 
 <section class="board">

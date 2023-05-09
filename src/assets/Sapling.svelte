@@ -1,21 +1,16 @@
 <script>
-	import { onMount } from 'svelte';
-	import rough from 'roughjs';
+	export let level = 0;
 
-	let el;
-
-	onMount(() => {
-		const rc = rough.canvas(el);
-		rc.ellipse(el.width / 2, el.height / 2, el.width / 2, el.height / 2, { fill: 'red', roughness: 2 });
-	});
 </script>
 
 <style>
-	.food {
+	.sapling {
 		position: absolute;
 		width: 100%;
 		height: 100%;
+		border: 0.5px rgb(87, 87, 87) solid;
 	}
+
 </style>
 
-<canvas class="food" bind:this={el}></canvas>
+<canvas class="sapling"></canvas>

@@ -46,8 +46,16 @@
         /* Notice that the scroll container needs to be the dndzone if you want dragging near the edge to trigger scrolling */
         overflow-y: scroll;
     }
+    @font-face {
+      font-family: 'Roboto';
+      src: url("https://fonts.googleapis.com/css2?family=Roboto&display=swap") format("woff");
+    }
+    
     .column-title {
 				height: 2.5em;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        color: #000000;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -67,6 +75,9 @@
         align-items: center;
         background-color: #dddddd;
         border: 1px solid #333333 ;
+        font-family: 'Roboto', sans-serif;
+      font-weight: 100;
+      color: #000000;
     }
     /* .program {
       width: 400px !important;

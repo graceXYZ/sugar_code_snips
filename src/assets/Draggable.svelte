@@ -2,7 +2,7 @@
     // import VerticalList from './VerticalList.svelte';
     import Board from './Board.svelte';
 
-	export let programData;
+	import {steps} from '../stores.js';
 
 	let toolboxItems = [
 		{id: 1, name: "move_left()", indent:0},
@@ -50,7 +50,34 @@
 		newColumnsData[0].items = toolboxItems;
 		// if you wanted to update a database or a server, this is where you would do it
 		columnsData = newColumnsData;
-		programData = columnsData[1].items;
+		let programData = formatSteps(columnsData[1].items);
+		steps.update(contents => programData)
+	}
+
+	function formatSteps(items) {
+		let steps = [];
+		items.forEach(element => {
+			let key;
+			switch (element.name) {
+				case 'move_up()':
+					key = 'u';
+					break;
+				case 'move_down()':
+					key = 'd';
+					break;
+				case "move_left()":
+					key = 'l';
+					break;
+				case "move_right()":
+					key = 'r';
+					break;
+				case "water()":
+					key = 'w';
+					break;
+			}
+			steps.push(key);
+		});
+		return steps;
 	}
 
 </script>
