@@ -1,4 +1,7 @@
 <script>
+
+    import Character from './Character.svelte';
+    import Sapling from './Sapling.svelte';
     
     let x = 0
     const BOARD_SIZE = 5;

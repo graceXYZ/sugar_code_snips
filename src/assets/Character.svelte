@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import rough from 'roughjs';
 
+	export let choiceChar = 0;
+
 	let el;
 
 	onMount(() => {
