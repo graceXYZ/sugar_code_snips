@@ -2,7 +2,16 @@
 	import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
     import { slide } from 'svelte/transition';
-	const flipDurationMs = 150;
+
+  import { stepI } from '../stores.js';
+  let stepIndex = -1;
+    stepI.subscribe(value => {
+      stepIndex = value;
+    });
+
+  const flipDurationMs = 150;
+
+
 	export let name;
 	export let items;
 	export let onDrop;
@@ -35,6 +44,10 @@
 
 </script>
 <style>
+  .selected {
+    background-color: #c9c9ab !important;
+  }
+
 	.wrapper {
 		height: 100%;
 		width: 100%;
@@ -113,9 +126,9 @@
 	<div class="column-content" use:dndzone={{items, flipDurationMs, zoneTabIndex: -1}}
      	 on:consider={handleDndConsiderCards} 
 			 on:finalize={handleDndFinalizeCards}>
-				{#each items as item (item.id)}
+				{#each items as item, i (item.id)}
 
-           <div class="card" animate:flip="{{duration: flipDurationMs}}" style="margin-left: {item.indent}px;" class:toolbox="{name==='toolbox'}">
+           <div class="card" animate:flip="{{duration: flipDurationMs}}" style="margin-left: {item.indent}px;" class:toolbox="{name==='toolbox'}" class:selected={stepIndex==i && name==='program'}>
             <div class="buttons">
               <div class="leftbutton" style="font-weight: 900;" on:click={toggleIndentDown(item)}>
                 {'<'}

@@ -7,10 +7,26 @@
   import Animation from './assets/Animation.svelte';
 
   import Modal from "./assets/Modal.svelte";
-  let modal;
 
+  import {level} from './stores.js';
+  import {feedback} from './stores.js';
+
+  let modal;
   let programData;
 
+  let levelThis = [];
+  level.subscribe(value => {
+    levelThis = value;
+    });
+  let levelInt = levelThis[0];
+
+  let feedbackThis = [];
+  feedback.subscribe(value => {
+		feedbackThis = value;
+	});
+
+  console.log("FEEBACK")
+  console.log(feedbackThis)
 
 </script>
 
@@ -32,10 +48,9 @@
     <Animation/>
   
     <Modal bind:this={modal}>
-      
-      <h2 style="margin-bottom: 0.1em">Welcome to The Sugar Shortage: Level 0</h2>
+      <h2 style="margin-bottom: 0.1em">Welcome to The Sugar Shortage</h2>
       <div class="ModalText"> 
-      <p>You are visiting a sugar beet farm to help figure out what is happening to the beet plants.</p>
+      <p>You are visiting a sugar beet farm to help figure out why all the beet plants are dying!</p>
       <p>Your first task is to make sure all the plants are watered.</p>
       <p>Using the toolbox commands on the left, construct a program to move your character around the field and water the plants.</p>
       <br>
@@ -47,8 +62,10 @@
     </Modal>
   </div>
 
-  <div class="buttonWrap">
+  <div class="footerWrap">
     <button on:click={() => modal.show()}>Show instructions</button>
+    <div class="levelMessage"> Level {levelInt} </div>
+    <div class="feedback"> {feedbackThis} </div>
   </div>
   
 
@@ -111,11 +128,30 @@
     border: 0.5px black solid;
   }
 
-  .buttonWrap {
-    display: flex;
+  .levelMessage, .feedback {
+    padding: 0.5em;
+    text-align: center;
+    min-width: 100px;
+    background-color: rgb(245, 245, 245);
+    border-radius: 6px;
+  }
+
+  .feedback {
+    text-align: right;
+  }
+  
+
+  .footerWrap {
+    display: grid;
+    gap: 15px;
     margin: 0.5em;
     align-items: start;
+    grid-template-columns: 175px 100px 1fr;
     justify-content: left;
+  }
+
+  .footerWrap button {
+    width: 175px;
   }
 
   

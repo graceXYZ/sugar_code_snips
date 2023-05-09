@@ -4,15 +4,32 @@
     import Sapling from './Sapling.svelte';
 
     import {steps} from '../stores.js';
+    import { stepI } from '../stores.js';
+    import { feedback } from '../stores.js';
+
+    // function pushFeedback() {
+    //   feedback.update(n => "ok");
+    // }
     
     let x = 0
     const BOARD_SIZE = 2;
     let choiceChar = 0;
     let level = 0;
-    let stepIndex = -1;
+    let started = false;
+
+    let feedbackItems = {'drag': 'Drag the toolbox commands into the program and press play!',
+                          'incorrect': 'Make sure to water all the plants!',
+                          'correct': 'Great job!! All the plants are watered!!',
+                          'collision': 'You can\'t walk outside the field!'
+                        }; 
 
     const XYZ_COLORS = ['#FF4040','#40A040','#5050F1']
     const XYZ_SHADES = ['#000000','#1D1D1D','#444444','#C4C4C4','#E5E5E5','#FFFFFF']
+
+    let stepIndex = -1;
+    stepI.subscribe(value => {
+      stepIndex = value;
+    });
 
     let stepsFormat = [];
     steps.subscribe(value => {
@@ -32,8 +49,6 @@
     let charPosition;
     let gameInterval;
 
-    $: { x = 1}
-
 
     function newGame() {
         // score = 0;
@@ -42,6 +57,8 @@
         board = [...Array(BOARD_SIZE)].map(() => Array(BOARD_SIZE).fill(0));
         boardWater = [...Array(BOARD_SIZE)].map(() => Array(BOARD_SIZE).fill(0));
         charPosition = [0, 0];
+
+        // pushFeedback()
 
         // addSaplings();
         // addFood();
@@ -52,15 +69,19 @@
       charPosition = position;
     }
 
-
     function addSaplings(){
       let pos = Math.floor(BOARD_SIZE / 2);
       board[pos][pos] = SAPLING_CELL;
     }
 
+    function updateFeedback(key){
+      let newItem = feedbackItems[key]
+      feedback.update(n => newItem)
+    }
 
     function outOfBounds(){
       console.log("cant move that way!")
+      updateFeedback("collision")
       stop()
     }
 
@@ -82,20 +103,23 @@
 
     function stop() {
         clearInterval(gameInterval);
-        stepIndex = -1
+        stepI.update(n => -1)
         return
     }
 
     function move() {
-        stepIndex += 1
+        stepI.update(n => n+1)
+
+        checkSuccess();
 
         if (stepIndex >= stepsFormat.length) {
           stop()
           return
         }
-
+        
         console.log("step")
         console.log(stepIndex)
+
         let direction = stepsFormat[stepIndex]
         const [currX, currY] = charPosition;
 
@@ -113,8 +137,37 @@
         }
     }
 
+
+    function checkSuccess() {
+      console.log("Success!")
+      let watered;
+      watered = allWatered()
+      if (watered){
+        updateFeedback('correct');
+      } else {
+        updateFeedback('incorrect');
+      }
+    }
+
+    function allWatered(){
+      for (let outer = 0; outer < BOARD_SIZE; outer ++){
+        for (let inner = 0; inner < BOARD_SIZE; inner ++){ 
+          if (boardWater[outer][inner] == DRY_CELL) {
+            console.log("NOT ALL WATERED!")
+            return false;
+          }
+        }
+      }
+      console.log("ALL WATERED!")
+      return true;
+    }
+
     function start() {
-        newGame();
+        started = true;
+        if (started) {
+          reset();
+        }
+    
         gameInterval = setInterval(move, 750);
     }
 
@@ -274,6 +327,8 @@
       font-weight: 100;
       color: #000000;
       font-size: 1em;
+      margin: 0 0.2em;
+      border: 0.5px black solid;
     }
   </style>
   

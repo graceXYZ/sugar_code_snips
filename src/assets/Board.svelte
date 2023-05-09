@@ -2,6 +2,7 @@
 	import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
 	import Column from "./Column.svelte";
+
 	const flipDurationMs = 300;
 	
   export let columns;

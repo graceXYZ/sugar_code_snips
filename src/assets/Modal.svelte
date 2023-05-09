@@ -11,7 +11,7 @@
   <style>
     .modal-wrapper {
       /* background-color: rgb(0, 0, 0); */
-      background-color: rgba(212, 212, 212, 0.4);
+      background-color: rgba(212, 212, 212, 0.9);
       position: absolute;
       width: 100%;
       height: 100%;
@@ -21,8 +21,8 @@
   
     .modal {
       background-color: white;
-      max-width: 80vw;
-      height: 300px;
+      max-width: 800px;
+      height: 350px;
       padding: 1rem;
       position: relative;
       margin: 2em auto;
