@@ -8,18 +8,30 @@
 	export let onDrop;
 	
 	function handleDndConsiderCards(e) {
-    console.warn("got consider", name); 
 		items = e.detail.items;
-  }
+    }
   function handleDndFinalizeCards(e) {
     onDrop(e.detail.items);
-    e.detail.item.indent = 0;
+  }
+
+  function toggleIndentDown(item){
+    console.log("DECR")
+    if (item.indent >= 50) {
+      item.indent -= 50;
+    }
+    item = item;
+    onDrop(items);
   }
 
   function toggleIndent(item){
-    console.log("CLICK")
-    item.indent += 50;
+    console.log("INCREASE")
+    if (item.indent <= 50*2) {
+      item.indent += 50;
+    }
+    item = item;
+    onDrop(items);
   }
+
 
 </script>
 <style>
@@ -30,7 +42,7 @@
 		overflow-y: hidden;
 	}
 	.column-content {
-        height: calc(100% - 2.5em);
+        height: 310px;
         /* Notice that the scroll container needs to be the dndzone if you want dragging near the edge to trigger scrolling */
         overflow-y: scroll;
     }
@@ -45,6 +57,7 @@
         margin: 10px auto;
     }
     .card {
+      position: relative;
         height: 2em;
         width: 180px;
         margin: 0.2em 0;
@@ -55,11 +68,31 @@
         background-color: #dddddd;
         border: 1px solid #333333 ;
     }
-    .program {
+    /* .program {
       width: 400px !important;
-    }
+    } */
     .toolbox {
       margin-left: 0px !important;
+    }
+    .buttons {
+      top: 0;
+      left: 0;
+      position: absolute;
+      display: flex;
+    }
+    .leftbutton {
+      width: 90px;
+      height: 3em;
+      padding: 0.5em 1em;
+      margin: 0;
+      text-align: left;
+    }
+    .rightbutton {
+      width: 90px;
+      height: 3em;
+      padding: 0.5em 1em;
+      margin: 0;
+      text-align: right;
     }
 </style>
 <div class='wrapper' class:program="{name==='program'}">
@@ -70,8 +103,20 @@
      	 on:consider={handleDndConsiderCards} 
 			 on:finalize={handleDndFinalizeCards}>
 				{#each items as item (item.id)}
-           <div class="card" animate:flip="{{duration: flipDurationMs}}" style="margin-left: {item.indent}px;" class:toolbox="{name==='toolbox'}" on:click={toggleIndent(item)}>
+
+           <div class="card" animate:flip="{{duration: flipDurationMs}}" style="margin-left: {item.indent}px;" class:toolbox="{name==='toolbox'}">
+            <div class="buttons">
+              <div class="leftbutton" style="font-weight: 900;" on:click={toggleIndentDown(item)}>
+                {'<'}
+              </div>
+              <div class="rightbutton" style="font-weight: 900;" on:click={toggleIndent(item)}>
+                {'>'}
+              </div>
+            </div>
+            <div class="name">
               {item.name}
+            </div>
+              
             </div>
         {/each}
     </div>

@@ -14,19 +14,22 @@
   function handleDndFinalizeColumns(e) {
     onFinalUpdate(e.detail.items);
   }
- 	function handleItemFinalize(columnIdx, newItems) {
+ 	function handleItemFinalize(columnIdx, name, newItems) {
 		columns[columnIdx].items = newItems;
+    // reset all toolbox items to 0 indent
+    let column;
+    if (name == "toolbox") {
+      column = columns[columnIdx].items;
+      column.forEach(item => {
+        item.indent = 0;
+      });
+    }
 		onFinalUpdate([...columns]);
 	}
 </script>
 <style>
-    .board {
-        height: 90vh;
-        width: 100%;
-        padding: 0.5em;
-    }
     .column {
-        height: 500px;
+        height: 420px;
         width: 200px;
         padding: 0.5em;
         margin: 0.5em;
@@ -35,14 +38,14 @@
         background-color: rgb(245, 245, 245);
     }
     .program {
-      width: 420px !important;
+      width: 360px !important;
     }
 </style>
 
 <section class="board">
     {#each columns as {id, name,items,indents}, idx (id)}
-  		<div class:program="{name==='program'}" class="column"animate:flip="{{duration: flipDurationMs}}" >    
-				<Column name={name} items={items} onDrop={(newItems) => handleItemFinalize(idx, newItems)}/>
+  		<div class:program="{name==='program'}" class="column" animate:flip="{{duration: flipDurationMs}}" >    
+				<Column name={name} items={items} onDrop={(newItems) => handleItemFinalize(idx, name, newItems)}/>
 			</div>
     {/each}
 </section>

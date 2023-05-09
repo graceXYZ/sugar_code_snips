@@ -4,13 +4,18 @@
   import Counter from './lib/Counter.svelte'
     import ToDo from './assets/ToDo.svelte';
     import Draggable from './assets/Draggable.svelte';
+    import Animation from './assets/Animation.svelte';
+
+
+  let programData;
+
 
 </script>
 
 
 <main>
 
-  <h1>InventXYZ Code Snips</h1>
+  <h1>InventXYZ Sugar Shortage</h1>
 
   <nav>
     <a href="/">home</a>
@@ -19,22 +24,15 @@
 
   <!-- <ToDo/> -->
 
-  <Draggable/>
+  <div class="wrapElements">
 
-  <div>
-    <div id="sortableTrash" class="sortable-code"></div> 
-    <div id="sortable" class="sortable-code"></div> 
-    <div style="clear:both;"></div> 
-    <p> 
-        <input id="feedbackLink" value="Get Feedback" type="button" /> 
-        <input id="newInstanceLink" value="Reset Problem" type="button" /> 
-    </p> 
+    <Draggable {programData}/>
+    <Animation/>
+  
   </div>
 
+  
 
-  <p class="read-the-docs">
-    Click on a section to start learning!
-  </p>
 </main>
 
 <style>
@@ -43,6 +41,10 @@
   }
   .read-the-docs {
     color: #888;
+  }
+  .wrapElements {
+    display: flex;
+    margin: 2.5em 0;
   }
 
   
