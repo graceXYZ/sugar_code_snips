@@ -8,25 +8,29 @@
 
   import Modal from "./assets/Modal.svelte";
 
-  import {level} from './stores.js';
+  
   import {feedback} from './stores.js';
 
   let modal;
   let programData;
 
-  let levelThis = [];
-  level.subscribe(value => {
-    levelThis = value;
+  import {levelStore} from './stores.js';
+  let level;
+  levelStore.subscribe(value => {
+    level = value;
     });
-  let levelInt = levelThis[0];
 
-  let feedbackThis = [];
+  let feedbackThis = "";
   feedback.subscribe(value => {
 		feedbackThis = value;
 	});
 
   console.log("FEEBACK")
   console.log(feedbackThis)
+
+  function changeLevel(){
+    levelStore.update(n => level)
+  }
 
 </script>
 
@@ -64,7 +68,18 @@
 
   <div class="footerWrap">
     <button on:click={() => modal.show()}>Show instructions</button>
-    <div class="levelMessage"> Level {levelInt} </div>
+    <div class="levelMessage"> Level
+
+      <select class="levelSelect" bind:value={level} on:change="{changeLevel}">
+        <option value=0>
+          {0}
+        </option>
+        <option value=1>
+          {1}
+        </option>
+      </select>
+    
+    </div>
     <div class="feedback"> {feedbackThis} </div>
   </div>
   

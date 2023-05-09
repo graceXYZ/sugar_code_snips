@@ -3,18 +3,37 @@
   import { dndzone } from 'svelte-dnd-action';
     import { slide } from 'svelte/transition';
 
+    import { repCountsStore} from '../stores.js';
+
   import { stepI } from '../stores.js';
   let stepIndex = -1;
     stepI.subscribe(value => {
       stepIndex = value;
     });
 
+  import {levelStore} from '../stores.js';
+	let level=0;
+	levelStore.subscribe(value => {
+		level = value;
+  });
+
   const flipDurationMs = 150;
 
+  repCountsStore
+
+  let repeatCounts = [];
+
+  let answer = '';
 
 	export let name;
 	export let items;
 	export let onDrop;
+
+  function handleRepSelect(){
+    console.log("CHANGE REP")
+    repCountsStore.update(contents => repeatCounts)
+  }
+  
 	
 	function handleDndConsiderCards(e) {
 		items = e.detail.items;
@@ -118,6 +137,18 @@
       margin: 0;
       text-align: right;
     }
+    .hide {
+      display: none;
+    }
+    .selectRepeat {
+      position: absolute;
+      top: 12px;
+      left: 74px;
+    }
+    .selectDirect {
+      width: 34px;
+    }
+
 </style>
 <div class='wrapper' class:program="{name==='program'}">
  	<div class="column-title">
@@ -130,10 +161,29 @@
 
            <div class="card" animate:flip="{{duration: flipDurationMs}}" style="margin-left: {item.indent}px;" class:toolbox="{name==='toolbox'}" class:selected={stepIndex==i && name==='program'}>
             <div class="buttons">
-              <div class="leftbutton" style="font-weight: 900;" on:click={toggleIndentDown(item)}>
+              <div class="leftbutton" style="font-weight: 900;" on:click={toggleIndentDown(item)} class:hide={level == 0 || item.name=="repeat ____ times:"}>
                 {'<'}
               </div>
-              <div class="rightbutton" style="font-weight: 900;" on:click={toggleIndent(item)}>
+              <div class="selectRepeat" class:hide={level == 0 || item.name!="repeat ____ times:"}>
+                <select class="selectDirect" bind:value={repeatCounts[i]} on:change="{handleRepSelect}">
+                  <option value=1>
+                    {1}
+                  </option>
+                  <option value=2>
+                    {2}
+                  </option>
+                  <option value=3>
+                    {3}
+                  </option>
+                  <option value=4>
+                    {4}
+                  </option>
+                  <option value=5>
+                    {5}
+                  </option>
+                </select>
+              </div>
+              <div class="rightbutton" style="font-weight: 900;" on:click={toggleIndent(item)} class:hide={level == 0 || item.name=="repeat ____ times:"}>
                 {'>'}
               </div>
             </div>

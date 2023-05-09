@@ -3,7 +3,9 @@
     import Character from './Character.svelte';
     import Sapling from './Sapling.svelte';
 
-    import {steps} from '../stores.js';
+    import { steps} from '../stores.js';
+    import { indentsStore} from '../stores.js';
+    import { repCountsStore} from '../stores.js';
     import { stepI } from '../stores.js';
     import { feedback } from '../stores.js';
 
@@ -12,16 +14,44 @@
     // }
     
     let x = 0
-    const BOARD_SIZE = 2;
+    let BOARD_SIZE;
     let choiceChar = 0;
-    let level = 0;
+    let inRepeat = false;
+    let startRepeatIndex = 0;
+    let repeatCount = 0;
+    let breakRepeat = false;
+
+    import {levelStore} from '../stores.js';
+    let level;
+    levelStore.subscribe(value => {
+      level = value;
+    });
+
+    let widthBoard, rowHeight;
+    $: {
+      console.log("LEVEL CHANGED")
+      console.log(level);
+      if (level== 0){
+        BOARD_SIZE = 2;
+      } else if (level==1){
+        BOARD_SIZE = 4;
+      }
+      widthBoard = 250;
+      rowHeight = widthBoard / BOARD_SIZE;
+      start();
+    }
+
+
     let started = false;
 
     let feedbackItems = {'drag': 'Drag the toolbox commands into the program and press play!',
                           'incorrect': 'Make sure to water all the plants!',
-                          'correct': 'Great job!! All the plants are watered!!',
+                          'correct': 'Great job! All the plants are watered! You completed Level 0!',
                           'collision': 'You can\'t walk outside the field!'
                         }; 
+
+
+    
 
     const XYZ_COLORS = ['#FF4040','#40A040','#5050F1']
     const XYZ_SHADES = ['#000000','#1D1D1D','#444444','#C4C4C4','#E5E5E5','#FFFFFF']
@@ -34,6 +64,16 @@
     let stepsFormat = [];
     steps.subscribe(value => {
       stepsFormat = value;
+    });
+
+    let indents = [];
+    indentsStore.subscribe(value => {
+      indents = value;
+    });
+
+    let repeatCounts = [];
+    repCountsStore.subscribe(value => {
+      repeatCounts = value;
     });
 
     // every cell in boardwill be empty or have a sapling
@@ -110,9 +150,10 @@
     function move() {
         stepI.update(n => n+1)
 
-        checkSuccess();
+        checkRepeat()
 
         if (stepIndex >= stepsFormat.length) {
+          checkSuccess();
           stop()
           return
         }
@@ -134,8 +175,48 @@
             return checkForCollision([currX + 1, currY]);
           case 'w':
             return waterCell([currX, currY]);
+          case 'repeat':
+            // if (breakRepeat){
+            //   breakRepeat = false;
+            //   return;
+            // }
+            console.log("FOUND REPEAT")
+            // if (breakRepeat){
+            //   // breakRepeat = false;
+            //   return;
+            // }
+            if (!inRepeat) {
+              repeatCount = repeatCounts[stepIndex]
+              startRepeatIndex = stepIndex;
+              inRepeat = true;
+            }
+            return;
         }
     }
+
+    function checkRepeat(){
+      // if next line is not in block, end repeat
+      // if (indents[stepIndex+1]<=indents[startRepeatIndex]) {
+      //   breakRepeat = true;
+      // }
+      // if we're in a repeat block and the next line is not, go back
+      if (indents[stepIndex+1]<=indents[startRepeatIndex]) {
+        repeatCount = 0;
+        return;
+      }
+      if (inRepeat && (stepIndex == stepsFormat.length || indents[stepIndex]<=indents[startRepeatIndex])) {
+        console.log("INSIDE REPEAT")
+        repeatCount -= 1;
+        console.log(repeatCount)
+        if (repeatCount <= 0){
+          breakRepeat = true;
+          inRepeat = false;
+          return;
+        }
+        stepI.update(n => startRepeatIndex)
+      }
+    }
+
 
 
     function checkSuccess() {
@@ -163,10 +244,11 @@
     }
 
     function start() {
-        started = true;
+        stepI.update(n => -1)
         if (started) {
           reset();
         }
+        started = true;
     
         gameInterval = setInterval(move, 750);
     }
@@ -185,7 +267,7 @@
   <h2>field</h2>
 
 
-  <div class="field">
+  <div class="field" style="grid-template-columns: repeat({BOARD_SIZE}, 1fr); grid-auto-rows: {rowHeight};">
       {#each board as row, outerIndex}
         {#each row as cell, index}
           <div class="cell" class:character={charPosition[0]==outerIndex && charPosition[1]==index}
@@ -196,7 +278,7 @@
               <Sapling {level}/>
             {/if} -->
             <div class="characterSVG" class:hideCell={charPosition[0]!=outerIndex || charPosition[1]!=index}>
-              <svg viewBox="0 0 280 683" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg style="width:{widthBoard / BOARD_SIZE}; height:{widthBoard / BOARD_SIZE}" viewBox="0 0 280 683" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M99.8989 30.0001C99.8989 21.7159 106.615 15.0001 114.899 15.0001H164.899C173.183 15.0001 179.899 21.7159 179.899 30.0001V105.819C179.899 117.59 173.015 128.274 162.295 133.138L144.031 141.425C141.405 142.617 138.393 142.617 135.767 141.425L117.503 133.138C106.783 128.274 99.8989 117.59 99.8989 105.819V30.0001Z" fill="#8B6730"/>
                 <rect x="108.874" y="62.9496" width="25" height="17.5" rx="8.75" fill="white"/>
                 <rect x="116.374" y="66.7495" width="10" height="10" rx="5" fill="#8B6730"/>
@@ -248,10 +330,6 @@
       height: 100%;
     }
 
-    .characterSVG SVG {
-      width: calc(var(--size) / (var(--noOfColumns)+1));
-      height: calc(var(--size) / (var(--noOfColumns)+1));
-    }
 
     .sapling {
       background-color: rgba(64, 160, 64, 1);
@@ -267,12 +345,10 @@
     }
 
     :root {
-      --size: 250px;
-      --noOfColumns: 2;
-      --rowHeight: calc(var(--size) / var(--noOfColumns));
       --ratioA: 1;
       --ratioB: 1;
     }
+
     .cell {
       position: relative;
       display: flex;
@@ -283,6 +359,7 @@
     .controls {
         margin: 1em auto;
     }
+
     .field {
         width: 250px;
         height: 250px;
@@ -290,8 +367,7 @@
         background-color: rgb(245, 245, 245);        
         position: relative;
         display: grid;
-        grid-template-columns: repeat(var(--noOfColumns), 1fr);
-        grid-auto-rows: var(--rowHeight);
+        
     }
     .wrapper {
         position: relative;
