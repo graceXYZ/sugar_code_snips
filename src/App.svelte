@@ -6,7 +6,7 @@
   import Draggable from './assets/Draggable.svelte';
   import Animation from './assets/Animation.svelte';
 
-  import Modal from "./Modal.svelte";
+  import Modal from "./assets/Modal.svelte";
   let modal;
 
   let programData;
@@ -31,20 +31,43 @@
     <Draggable/>
     <Animation/>
   
+    <Modal bind:this={modal}>
+      
+      <h2 style="margin-bottom: 0.1em">Welcome to The Sugar Shortage: Level 0</h2>
+      <div class="ModalText"> 
+      <p>You are visiting a sugar beet farm to help figure out what is happening to the beet plants.</p>
+      <p>Your first task is to make sure all the plants are watered.</p>
+      <p>Using the toolbox commands on the left, construct a program to move your character around the field and water the plants.</p>
+      <br>
+      <p>Press <strong>Play</strong> to activate your program, and <strong>Reset</strong> to try again. </p>
+      <br>
+      <p>When all the plants are watered, you can move on to the next level!</p>
+    </div>
+      <button class="modalButton" on:click={() => modal.hide()}>Close</button>
+    </Modal>
   </div>
 
-  <button on:click={() => modal.show()}>Show modal</button>
-  <Modal bind:this={modal}>
-    <h2>Modal title</h2>
-    <p>Modal content.</p>
-    <button on:click={() => modal.hide()}>Close</button>
-  </Modal>
+  <div class="buttonWrap">
+    <button on:click={() => modal.show()}>Show instructions</button>
+  </div>
+  
 
   
 
 </main>
 
 <style>
+  .ModalText {
+    text-align: left;
+    padding: 0.5em;
+  }
+  .modalButton {
+        position:absolute;
+        bottom: 0;
+        right: 0;
+        margin: 1em;
+  }
+
   h1 {
     margin-bottom: 0.2em;
   }
@@ -61,7 +84,9 @@
   }
   .wrapElements {
     display: flex;
-    margin: 2.5em 0;
+    margin: 0;
+    margin-top: 2.5em;
+    position: relative;
   }
 
     @font-face {
@@ -74,6 +99,23 @@
     font-style: normal;
     font-weight: 100;
     color: #000000;
+  }
+
+  button {
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 100;
+    color: #000000;
+    position: relative;
+    margin: 0;
+    border: 0.5px black solid;
+  }
+
+  .buttonWrap {
+    display: flex;
+    margin: 0.5em;
+    align-items: start;
+    justify-content: left;
   }
 
   

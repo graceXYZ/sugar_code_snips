@@ -6,7 +6,7 @@
     import {steps} from '../stores.js';
     
     let x = 0
-    const BOARD_SIZE = 5;
+    const BOARD_SIZE = 2;
     let choiceChar = 0;
     let level = 0;
     let stepIndex = -1;
@@ -215,7 +215,7 @@
 
     :root {
       --size: 250px;
-      --noOfColumns: 5;
+      --noOfColumns: 2;
       --rowHeight: calc(var(--size) / var(--noOfColumns));
       --ratioA: 1;
       --ratioB: 1;
